@@ -1,0 +1,157 @@
+/* Copyright 2006 Philip Dorrell.
+   This style sheet is part of the PrimeShooter game which is 
+   licensed under the General Public License version 2,
+   a copy of which may be found at http://thinkinghard.com/math/integers/gnu-general-public-license.txt
+*/
+#game {
+  /* Main game area */
+  border: solid 2px #909090;
+  height: 500px;
+  width: 800px;
+  position: relative;
+  /* For absolute positioning of child components */
+  overflow: hidden;
+  /* So that game elements are hidden as they enter/leave game area */
+  margin-left: 3em; }
+
+#gun {
+  /* The player's gun */
+  border: solid 5px black;
+  height: 40px;
+  width: 40px;
+  position: absolute;
+  /* within #game */
+  top: 450px;
+  left: 350px; }
+
+#spareGuns {
+  /* Player's spare guns (bottom right) */
+  position: absolute;
+  /* within #game */
+  top: 455px;
+  left: 0px;
+  width: 790px;
+  z-index: -2; }
+
+.spareGun {
+  /* For each spare gun */
+  float: right;
+  background-color: #ffffe0;
+  border: solid 3px #b0b0b0;
+  height: 20px;
+  width: 20px;
+  margin: 5px; }
+
+#bullet {
+  /* The "prime" bullet */
+  position: absolute;
+  /* within #game */
+  top: 0px;
+  left: 0px;
+  font-size: 1.0em;
+  font-family: Arial,sans-serif;
+  font-weight: bold;
+  z-index: 1; }
+
+.number {
+  /* The "Number"s which attack the user and must be shot */
+  position: absolute;
+  /* within #game */
+  top: 0px;
+  left: 0px;
+  height: 30px;
+  line-height: 30px;
+  width: 100px;
+  text-align: center;
+  font-size: 20px;
+  font-family: Arial,sans-serif;
+  font-weight: bold;
+  background-color: #ff4040;
+  z-index: 0;
+  border: solid 1px; }
+
+#score {
+  /* Score display (top left) */
+  position: absolute;
+  /* within #game */
+  top: 0px;
+  left: 0px;
+  font-size: 20px;
+  font-family: Arial,sans-serif;
+  font-weight: bold;
+  color: #b0b0b0;
+  z-index: 2;
+  margin: 4px; }
+
+#highScore {
+  /* Score display (top left) */
+  position: absolute;
+  /* within #game */
+  top: 0px;
+  right: 5px;
+  font-size: 20px;
+  font-family: Arial,sans-serif;
+  font-weight: bold;
+  color: #b0b0b0;
+  z-index: 2;
+  margin: 4px; }
+
+#gameOver {
+  /* Message shown over game when game has been lost */
+  position: relative;
+  text-align: center;
+  top: 180px;
+  font-size: 30px;
+  font-family: Arial,sans-serif;
+  line-height: 1.2em;
+  font-weight: bold;
+  background-color: #f0f0f0;
+  border: 2px solid #808080;
+  padding: 10px;
+  margin: 0px 20px;
+  color: #0020ff;
+  z-index: 5; }
+
+#message {
+  /* Message about gun death */
+  position: relative;
+  text-align: center;
+  top: 180px;
+  font-size: 30px;
+  font-family: Arial,sans-serif;
+  font-weight: bold;
+  background-color: #f0f0f0;
+  border: 2px solid #808080;
+  padding: 10px;
+  margin: 0px 20px;
+  color: #0020ff;
+  z-index: 5; }
+
+#gameOverText {
+  /* Message about game over */
+  margin: 0 0 10px 0; }
+
+#startNewGame, #saveScore {
+  /* Holds button to start new game */
+  font-size: 30px;
+  font-family: Arial,sans-serif;
+  font-weight: bold; }
+
+form.inline {
+  display: inline; }
+
+#startNewGameDiv {
+  /* Button to start new game */
+  text-align: center; }
+
+.noscript {
+  /* for message if Javascript is disabled */
+  font-size: 1.4em;
+  font-family: Helvetica, sans-serif;
+  background-color: #e02020;
+  color: #ffffff;
+  padding: 0.3em;
+  margin: 0.2em;
+  border: solid 3pt black; }
+
+/*# sourceMappingURL=PrimeShooter.css.map */
