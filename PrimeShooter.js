@@ -430,18 +430,18 @@ Number.prototype = {
 }
 
 //================================================================================
-/** Initialise map from keycode to primes (for firing bullets) */
-function initPrimesForKeyCode() {
-  var codes = [];
-  codes[50] = 2;
-  codes[51] = 3;
-  codes[53] = 5;
-  codes[55] = 7;
-  codes[101] = 11;  // "e"
-  codes[116] = 13;  // "t"
-  codes[115] = 17;  // "s"
-  codes[110] = 19;  // "n"
-  return codes;
+/** Initialise map from key to primes (for firing bullets) */
+function initPrimesForKey() {
+  return {
+    "2": 2,
+    "3": 3,
+    "5": 5,
+    "7": 7,
+    e: 11,
+    t: 13,
+    s: 17,
+    n: 19
+  };
 }
 
 /** The maximum value for Number's as a function of current score:
@@ -485,7 +485,7 @@ Game.prototype = {
   initNumGuns: 3,  // number of spare guns to start with
   scorePerNewGun: 50,  // how many points to get a new spare gun
   
-  primesForKeyCodes: initPrimesForKeyCode(),  // codes to map key codes to prime number bullets
+  primesForKeys: initPrimesForKey(),  // keys to map to prime number bullets
   
   displayLocalStorageError: function(error) {
     this.noLocalStorageElement.innerHTML = "&nbsp;<br/>(<b>Note:</b> PrimeShooter's high score functionality is not available in this web browser. The following error occurred when attempting to use <b>localStorage</b>: <span id = 'localStorageError'></span>)";
@@ -581,14 +581,15 @@ Game.prototype = {
   },
   
   /** Response to key press, either a prime bullet or a "P" bullet, or none */
-  keyPress: function (code) {
+  keyPress: function (key) {
     if (this.suspended) { return false; }
     if (!this.bullet.active) {
-      var prime = this.primesForKeyCodes[code];
+      key = key.toLowerCase();
+      var prime = this.primesForKeys[key];
       if (prime) {
         this.bullet.fire (prime);
       }
-      else if (code == 112) { // "p"
+      else if (key == "p") {
         this.bullet.firePrime();
       }
     }
@@ -596,12 +597,12 @@ Game.prototype = {
   },
   
   /** Response to keys down */
-  keyDown: function (code) {
-    if (code == 37) { // left arrow
+  keyDown: function (key) {
+    if (key == "ArrowLeft") {
       if (!this.suspended) this.gun.setGoingLeft();
       return false;
     }
-    else if (code == 39) { // right arrow
+    else if (key == "ArrowRight") {
       if (!this.suspended) this.gun.setGoingRight();
       return false;
     }
@@ -610,12 +611,12 @@ Game.prototype = {
     }
   },
   
-  keyUp: function (code) {
-    if (code == 37) { // left arrow
+  keyUp: function (key) {
+    if (key == "ArrowLeft") {
       if (!this.suspended) this.gun.clearGoingLeft();
       return false;
     }
-    else if (code == 39) { // right arrow
+    else if (key == "ArrowRight") {
       if (!this.suspended) this.gun.clearGoingRight();
       return false;
     }
@@ -733,37 +734,27 @@ GameController.prototype = {
     var controller = this;
     game.controller = controller;
     
-    this.document.onkeydown = function(event) { // set up keydown handler
-      if (!event) event = window.event;
-      return game.keyDown (event.keyCode);
-    };
-    
-    this.document.onkeyup = function(event) { // set up keyup handler
-      if (!event) event = window.event;
-      return game.keyUp (event.keyCode);
-    };
-    
-    this.document.onkeypress = function(event) { // set up keypress handler
-      if (!event) event = window.event;  // IE event
-      if (controller.finished) { // do nothing if game is finished
-        return true;
+    this.document.addEventListener("keydown", function(event) {
+      if (controller.finished) return;
+      if (event.key == "ArrowLeft" || event.key == "ArrowRight") {
+        if (game.keyDown(event.key) === false) event.preventDefault();
       }
-      else {
-        if (event.altKey || event.ctrlKey) { // game doesn't process Alt/Ctrl key presses
-          return true; 
+      else if (!event.altKey && !event.ctrlKey) {
+        if (event.key == "Escape") {
+          game.lost("Manually terminated by pressing Esc");
+          event.preventDefault();
         }
-        else {
-          var code = event.which || event.keyCode;
-          if (code == 27) { // Esc to abort game
-            game.lost("Manually terminated by pressing Esc");
-            return false;
-          }
-          else {
-            return game.keyPress (code); // pass keypress to Game object
-          }
+        else if (game.keyPress(event.key) === false) {
+          event.preventDefault();
         }
       }
-    };
+    });
+
+    this.document.addEventListener("keyup", function(event) {
+      if (!controller.finished && game.keyUp(event.key) === false) {
+        event.preventDefault();
+      }
+    });
     // and then start the game loop running ...
     this.startLoop();
   },
