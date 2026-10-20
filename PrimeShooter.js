@@ -242,11 +242,6 @@ Gun.prototype = {
     this.clearGoingRight();
   },
   
-  /** Set gun loaded. */
-  setLoaded: function() {
-    this.view.style.backgroundColor = this.loadedColor;
-  },
-  
   /** Reset (for new game) */
   reset: function() {
     this.pos = this.initialPos;
