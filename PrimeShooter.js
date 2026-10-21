@@ -479,9 +479,10 @@ function randomNumberForDifficulty(maxValue, divisorSets) {
 
 var difficultyLevels = [
   { minScore: 0, maxScore: 5, divisorSets: [[2]] },
-  { minScore: 6, maxScore: 15, divisorSets: [[2], [5]] },
-  { minScore: 16, maxScore: 20, divisorSets: [[2, 5]] },
-  { minScore: 21, maxScore: 40, divisorSets: [[2, 5]] },
+  { minScore: 6, maxScore: 10, divisorSets: [[5]] },
+  { minScore: 11, maxScore: 20, divisorSets: [[2], [5]] },
+  { minScore: 21, maxScore: 30, divisorSets: [[2, 5]] },
+  { minScore: 31, maxScore: 40, divisorSets: [[2, 5]] },
   { minScore: 41, maxScore: Infinity, divisorSets: [[2, 5]] }
 ];
 
@@ -527,7 +528,8 @@ Game.prototype = {
   
   initNumGuns: 3,  // number of spare guns to start with
   scorePerNewGun: 50,  // how many points to get a new spare gun
-  
+  scorePerAdditionalNumber: 30,  // score needed to increase the active number limit
+
   primesForKeys: initPrimesForKey(),  // keys to map to prime number bullets
   
   displayLocalStorageError: function(error) {
@@ -620,7 +622,10 @@ Game.prototype = {
       }
     }
     this.scoreText.firstChild.nodeValue = "" + this.score; // update score view
-    this.currentNumbers = Math.min (this.maxNumbers, Math.floor (1 + this.score/10)); // max number of active numbers
+    this.currentNumbers = Math.min (
+      this.maxNumbers,
+      Math.floor (1 + this.score / this.scorePerAdditionalNumber)
+    ); // max number of active numbers
     Number.prototype.maxValue = maxValueFromScore (this.score); // update max value for Numbers
     this.difficultyLevel = difficultyLevelForScore(this.score);
   },
