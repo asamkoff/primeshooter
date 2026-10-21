@@ -52,7 +52,12 @@ ruby] -->
 <p class="rotate-message" role="status">Rotate your phone to landscape to play.</p>
 
 <div id="gameLayout" class="game-layout">
-  <div class="thumb-buffer" aria-hidden="true"></div>
+  <div class="thumb-buffer">
+    <div id="moveControl" class="move-control" role="group" aria-label="Move player">
+      <button type="button" data-direction="left" aria-label="Move left">←</button>
+      <button type="button" data-direction="right" aria-label="Move right">→</button>
+    </div>
+  </div>
   <div id="gameViewport" class="game-viewport">
     <div id="game"><!-- Game area -->
       <div id="score">Score: <span id="scoreValue">0</span></div><!-- Score display -->
@@ -74,7 +79,9 @@ ruby] -->
       <div id="spareGuns"></div><!-- Spare gun display -->
     </div>
   </div>
-  <div class="thumb-buffer" aria-hidden="true"></div>
+  <div class="thumb-buffer">
+    <button id="shootTwo" class="shoot-control" type="button" aria-label="Shoot a number 2">2</button>
+  </div>
 </div>
 
 </div>

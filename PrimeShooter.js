@@ -808,12 +808,67 @@ function resizeGame() {
   gameElement.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
 }
 
+function setupTouchControls(game) {
+  var moveControl = document.getElementById("moveControl");
+  var shootButton = document.getElementById("shootTwo");
+  var pointerId = null;
+  var currentDirection = null;
+
+  function clearMovement() {
+    if (currentDirection == "ArrowLeft") game.keyUp("ArrowLeft");
+    if (currentDirection == "ArrowRight") game.keyUp("ArrowRight");
+    currentDirection = null;
+  }
+
+  function updateMovement(event) {
+    var bounds = moveControl.getBoundingClientRect();
+    var direction = event.clientY < bounds.top + bounds.height / 2
+      ? "ArrowLeft"
+      : "ArrowRight";
+    if (direction != currentDirection) {
+      clearMovement();
+      game.keyDown(direction);
+      currentDirection = direction;
+    }
+  }
+
+  moveControl.addEventListener("pointerdown", function(event) {
+    if (pointerId !== null) return;
+    event.preventDefault();
+    pointerId = event.pointerId;
+    moveControl.setPointerCapture(pointerId);
+    updateMovement(event);
+  });
+
+  moveControl.addEventListener("pointermove", function(event) {
+    if (event.pointerId == pointerId) {
+      event.preventDefault();
+      updateMovement(event);
+    }
+  });
+
+  function endMovement(event) {
+    if (event.pointerId == pointerId) {
+      clearMovement();
+      pointerId = null;
+    }
+  }
+
+  moveControl.addEventListener("pointerup", endMovement);
+  moveControl.addEventListener("pointercancel", endMovement);
+  moveControl.addEventListener("lostpointercapture", endMovement);
+  shootButton.addEventListener("click", function() {
+    game.keyPress("2");
+  });
+}
+
 function setup(numGuns) {
   Game.prototype.initNumGuns = numGuns;
   var game = new Game (document);
   setupIsPrime (Number.prototype.maxMaxValue);
   var gameController = new GameController (document, game, SIMULATION_STEP_MS);
   gameController.startGame();
+  setupTouchControls(game);
   resizeGame();
   window.addEventListener("resize", resizeGame);
 }
