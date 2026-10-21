@@ -6,7 +6,7 @@
 */
 
 //================================================================================
-var LOOP_INTERVAL = 13; // milliseconds per game loop
+var SIMULATION_STEP_MS = 13;
 
 //================================================================================
 
@@ -698,11 +698,14 @@ Game.prototype = {
 
 //================================================================================
 /** Controller for game, which manages keystroke input and sets up game loop */
-function GameController (document, game, loopInterval) {
+function GameController (document, game, simulationStep) {
   this.document = document;
   this.game = game;
   this.finished = false;
-  this.loopInterval = loopInterval;
+  this.simulationStep = simulationStep;
+  this.frameHandle = null;
+  this.lastFrameTime = null;
+  this.accumulator = 0;
 }
 
 GameController.prototype = {
@@ -717,9 +720,35 @@ GameController.prototype = {
   
   /** Start the game loop */
   startLoop: function() {
-    var game = this.game;
     var controller = this;
-    this.loopHandle = setInterval (function(){game.update();}, this.loopInterval);
+    this.lastFrameTime = null;
+    this.accumulator = 0;
+
+    function frame(timestamp) {
+      controller.frameHandle = null;
+      if (controller.finished) return;
+
+      if (controller.document.hidden) {
+        controller.lastFrameTime = null;
+        controller.accumulator = 0;
+      }
+      else {
+        if (controller.lastFrameTime !== null) {
+          controller.accumulator += timestamp - controller.lastFrameTime;
+          while (controller.accumulator >= controller.simulationStep && !controller.finished) {
+            controller.game.update();
+            controller.accumulator -= controller.simulationStep;
+          }
+        }
+        controller.lastFrameTime = timestamp;
+      }
+
+      if (!controller.finished) {
+        controller.frameHandle = requestAnimationFrame(frame);
+      }
+    }
+
+    this.frameHandle = requestAnimationFrame(frame);
   },
   
   /** Set up the game and then start it (for the first time). */
@@ -750,6 +779,10 @@ GameController.prototype = {
         event.preventDefault();
       }
     });
+    this.document.addEventListener("visibilitychange", function() {
+      controller.lastFrameTime = null;
+      controller.accumulator = 0;
+    });
     // and then start the game loop running ...
     this.startLoop();
   },
@@ -757,7 +790,10 @@ GameController.prototype = {
   /** Finish the game, and stop the game loop */
   finishGame: function() {
     this.finished = true;
-    clearInterval (this.loopHandle);
+    if (this.frameHandle !== null) {
+      cancelAnimationFrame(this.frameHandle);
+      this.frameHandle = null;
+    }
   }
   
 }
@@ -767,6 +803,6 @@ function setup(numGuns) {
   Game.prototype.initNumGuns = numGuns;
   var game = new Game (document);
   setupIsPrime (Number.prototype.maxMaxValue);
-  var gameController = new GameController (document, game, LOOP_INTERVAL);
+  var gameController = new GameController (document, game, SIMULATION_STEP_MS);
   gameController.startGame();
 }
