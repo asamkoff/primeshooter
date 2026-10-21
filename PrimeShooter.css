@@ -298,6 +298,10 @@ form.inline {
     min-height: 64px;
   }
 
+  .shoot-control-middle {
+    bottom: calc(50% - 32px);
+  }
+
   .shoot-control:active {
     background: #ddd;
   }

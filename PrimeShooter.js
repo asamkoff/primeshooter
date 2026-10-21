@@ -844,6 +844,7 @@ function setupTouchControls(game) {
   var moveControl = document.getElementById("moveControl");
   var joystickKnob = document.getElementById("joystickKnob");
   var shootButton = document.getElementById("shootTwo");
+  var shootFiveButton = document.getElementById("shootFive");
   var pointerId = null;
 
   function updateMovement(event) {
@@ -883,6 +884,9 @@ function setupTouchControls(game) {
   moveControl.addEventListener("lostpointercapture", endMovement);
   shootButton.addEventListener("click", function() {
     game.keyPress("2");
+  });
+  shootFiveButton.addEventListener("click", function() {
+    game.keyPress("5");
   });
 }
 
