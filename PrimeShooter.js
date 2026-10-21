@@ -357,7 +357,7 @@ Number.prototype = {
       this.veryActive = false;
       this.view.style.backgroundColor = this.activeColor;
       this.timeToDie = null;
-      this.value = 2 + Math.round ((this.maxValue-2) * Math.random());
+      this.value = this.game.difficultyLevel.numberValueGenerator(this.maxValue);
       this.view.style.visibility = "visible";
       this.view.firstChild.nodeValue = "" + this.value;
     }
@@ -453,6 +453,30 @@ function maxValueFromScore (score) {
   return value;
 }
 
+function randomPowerOfTwo(maxValue) {
+  var values = [];
+  for (var value = 2; value <= maxValue; value *= 2) {
+    values.push(value);
+  }
+  return values[Math.floor(Math.random() * values.length)];
+}
+
+var difficultyLevels = [
+  { minScore: 0, maxScore: 20, numberValueGenerator: randomPowerOfTwo },
+  { minScore: 21, maxScore: 40, numberValueGenerator: randomPowerOfTwo },
+  { minScore: 41, maxScore: Infinity, numberValueGenerator: randomPowerOfTwo }
+];
+
+function difficultyLevelForScore(score) {
+  for (var i = 0; i < difficultyLevels.length; i++) {
+    var level = difficultyLevels[i];
+    if (score >= level.minScore && score <= level.maxScore) {
+      return level;
+    }
+  }
+  throw new Error("No difficulty level configured for score " + score);
+}
+
 /** Model of Game including Gun, Bullet, up to 5 Numbers, current score + spare guns */
 function Game (document) {
   this.gun = new Gun (document.getElementById ("gun"));
@@ -501,6 +525,7 @@ Game.prototype = {
     this.messageElement.style.display = "none";
     this.bullet.clear();
     this.score = 0;
+    this.difficultyLevel = difficultyLevelForScore(this.score);
     try {
       this.highScoreValue = localStorage.primeShooterHighScore;
       this.hasLocalStorage = true;
@@ -579,6 +604,7 @@ Game.prototype = {
     this.scoreText.firstChild.nodeValue = "" + this.score; // update score view
     this.currentNumbers = Math.min (this.maxNumbers, Math.floor (1 + this.score/10)); // max number of active numbers
     Number.prototype.maxValue = maxValueFromScore (this.score); // update max value for Numbers
+    this.difficultyLevel = difficultyLevelForScore(this.score);
   },
   
   /** Response to key press, either a prime bullet or a "P" bullet, or none */
