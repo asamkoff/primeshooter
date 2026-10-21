@@ -864,47 +864,55 @@ function resizeGame() {
 }
 
 function setupTouchControls(game) {
-  var moveControl = document.getElementById("moveControl");
-  var joystickKnob = document.getElementById("joystickKnob");
+  var leftButton = document.getElementById("moveLeft");
+  var rightButton = document.getElementById("moveRight");
   var shootButton = document.getElementById("shootTwo");
   var shootFiveButton = document.getElementById("shootFive");
-  var pointerId = null;
+  var leftPointerId = null;
+  var rightPointerId = null;
+  var currentDirection = null;
 
-  function updateMovement(event) {
-    var bounds = moveControl.getBoundingClientRect();
-    var maxOffset = (bounds.width - joystickKnob.offsetWidth) / 2;
-    var offset = Math.max(-maxOffset, Math.min(maxOffset,
-      event.clientX - (bounds.left + bounds.width / 2)));
-    game.gun.joystickInput = offset / maxOffset;
-    joystickKnob.style.transform = "translate(calc(-50% + " + offset + "px), -50%)";
+  function setMovement(direction) {
+    if (direction === "left") game.gun.setGoingLeft();
+    else if (direction === "right") game.gun.setGoingRight();
+    else {
+      game.gun.clearGoingLeft();
+      game.gun.clearGoingRight();
+    }
   }
 
-  moveControl.addEventListener("pointerdown", function(event) {
-    if (pointerId !== null) return;
-    event.preventDefault();
-    pointerId = event.pointerId;
-    moveControl.setPointerCapture(pointerId);
-    updateMovement(event);
-  });
-
-  moveControl.addEventListener("pointermove", function(event) {
-    if (event.pointerId == pointerId) {
+  function setupMoveButton(button, isLeft) {
+    var pointerId = null;
+    button.addEventListener("pointerdown", function(event) {
+      if (pointerId !== null) return;
       event.preventDefault();
-      updateMovement(event);
-    }
-  });
+      pointerId = event.pointerId;
+      button.setPointerCapture(pointerId);
+      if (isLeft) leftPointerId = pointerId;
+      else rightPointerId = pointerId;
+      currentDirection = isLeft ? "left" : "right";
+      setMovement(currentDirection);
+    });
 
-  function endMovement(event) {
-    if (event.pointerId == pointerId) {
-      game.gun.joystickInput = null;
-      joystickKnob.style.transform = "translate(-50%, -50%)";
+    function endMovement(event) {
+      if (event.pointerId !== pointerId) return;
       pointerId = null;
+      if (isLeft) leftPointerId = null;
+      else rightPointerId = null;
+      if (currentDirection === (isLeft ? "left" : "right")) {
+        currentDirection = leftPointerId !== null ? "left" :
+          (rightPointerId !== null ? "right" : null);
+        setMovement(currentDirection);
+      }
     }
+
+    button.addEventListener("pointerup", endMovement);
+    button.addEventListener("pointercancel", endMovement);
+    button.addEventListener("lostpointercapture", endMovement);
   }
 
-  moveControl.addEventListener("pointerup", endMovement);
-  moveControl.addEventListener("pointercancel", endMovement);
-  moveControl.addEventListener("lostpointercapture", endMovement);
+  setupMoveButton(leftButton, true);
+  setupMoveButton(rightButton, false);
   shootButton.addEventListener("click", function() {
     game.keyPress("2");
   });
