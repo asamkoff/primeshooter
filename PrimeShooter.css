@@ -188,7 +188,7 @@ form.inline {
   body {
     margin: 0;
     overflow: hidden;
-    background: #111;
+    background: #fff;
   }
 
   .masthead,
@@ -216,8 +216,8 @@ form.inline {
     margin: 0;
     padding: env(safe-area-inset-top) env(safe-area-inset-right)
       env(safe-area-inset-bottom) env(safe-area-inset-left);
-    grid-template-columns: minmax(52px, 1fr) minmax(0, 804px) minmax(52px, 1fr);
-    background: #111;
+    grid-template-columns: minmax(96px, 1fr) minmax(0, 804px) minmax(96px, 1fr);
+    background: #fff;
   }
 
   .game-viewport {
@@ -227,8 +227,8 @@ form.inline {
 
   .thumb-buffer {
     height: 100%;
-    background: #242424;
-    border-color: #505050;
+    background: #f0f0f0;
+    border-color: #c0c0c0;
     border-radius: 8px;
   }
 }
