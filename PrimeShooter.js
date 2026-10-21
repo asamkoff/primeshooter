@@ -799,10 +799,21 @@ GameController.prototype = {
 }
 //================================================================================
 /** Setup function (to be invoked on page load) */
+function resizeGame() {
+  var viewport = document.getElementById("gameViewport");
+  var gameElement = document.getElementById("game");
+  if (viewport.clientWidth === 0 || viewport.clientHeight === 0) return;
+
+  var scale = Math.min(1, viewport.clientWidth / 804, viewport.clientHeight / 504);
+  gameElement.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
+}
+
 function setup(numGuns) {
   Game.prototype.initNumGuns = numGuns;
   var game = new Game (document);
   setupIsPrime (Number.prototype.maxMaxValue);
   var gameController = new GameController (document, game, SIMULATION_STEP_MS);
   gameController.startGame();
+  resizeGame();
+  window.addEventListener("resize", resizeGame);
 }

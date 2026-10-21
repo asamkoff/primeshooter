@@ -12,7 +12,37 @@
   /* For absolute positioning of child components */
   overflow: hidden;
   /* So that game elements are hidden as they enter/leave game area */
-  margin-left: 3em; }
+  margin: 0;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center; }
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(64px, 1fr) minmax(0, 804px) minmax(64px, 1fr);
+  align-items: center;
+  width: min(100%, 1120px);
+  margin: 1em auto;
+}
+
+.game-viewport {
+  position: relative;
+  width: 100%;
+  height: 504px;
+  min-width: 0;
+}
+
+.thumb-buffer {
+  height: 504px;
+  box-sizing: border-box;
+  background: #f0f0f0;
+  border: solid 1px #c0c0c0;
+}
+
+.rotate-message {
+  display: none;
+}
 
 #gun {
   /* The player's gun */
@@ -153,5 +183,69 @@ form.inline {
   padding: 0.3em;
   margin: 0.2em;
   border: solid 3pt black; }
+
+@media screen and (orientation: landscape) and (max-height: 700px) {
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #111;
+  }
+
+  .masthead,
+  .articleBlock,
+  .footer,
+  .game-title,
+  .game-date {
+    display: none !important;
+  }
+
+  .wideItem {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .game-layout {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+    grid-template-columns: minmax(52px, 1fr) minmax(0, 804px) minmax(52px, 1fr);
+    background: #111;
+  }
+
+  .game-viewport {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .thumb-buffer {
+    height: 100%;
+    background: #242424;
+    border-color: #505050;
+    border-radius: 8px;
+  }
+}
+
+@media screen and (orientation: portrait) and (max-width: 700px) {
+  .game-layout {
+    display: none;
+  }
+
+  .rotate-message {
+    display: block;
+    margin: 1em;
+    padding: 1em;
+    text-align: center;
+    background: #f0f0f0;
+    border: solid 1px #c0c0c0;
+  }
+}
 
 /*# sourceMappingURL=PrimeShooter.css.map */
