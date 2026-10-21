@@ -357,7 +357,10 @@ Number.prototype = {
       this.veryActive = false;
       this.view.style.backgroundColor = this.activeColor;
       this.timeToDie = null;
-      this.value = this.game.difficultyLevel.numberValueGenerator(this.maxValue);
+      this.value = randomNumberWithDivisors(
+        this.maxValue,
+        this.game.difficultyLevel.allowedDivisors
+      );
       this.view.style.visibility = "visible";
       this.view.firstChild.nodeValue = "" + this.value;
     }
@@ -453,18 +456,27 @@ function maxValueFromScore (score) {
   return value;
 }
 
-function randomPowerOfTwo(maxValue) {
+function randomNumberWithDivisors(maxValue, allowedDivisors) {
   var values = [];
-  for (var value = 2; value <= maxValue; value *= 2) {
-    values.push(value);
+
+  function addValues(base, divisorIndex) {
+    if (divisorIndex >= allowedDivisors.length) return;
+    var divisor = allowedDivisors[divisorIndex];
+    for (var value = base * divisor; value <= maxValue; value *= divisor) {
+      values.push(value);
+      addValues(value, divisorIndex + 1);
+    }
   }
+
+  addValues(1, 0);
   return values[Math.floor(Math.random() * values.length)];
 }
 
 var difficultyLevels = [
-  { minScore: 0, maxScore: 20, numberValueGenerator: randomPowerOfTwo },
-  { minScore: 21, maxScore: 40, numberValueGenerator: randomPowerOfTwo },
-  { minScore: 41, maxScore: Infinity, numberValueGenerator: randomPowerOfTwo }
+  { minScore: 0, maxScore: 5, allowedDivisors: [2] },
+  { minScore: 6, maxScore: 20, allowedDivisors: [2, 5] },
+  { minScore: 21, maxScore: 40, allowedDivisors: [2, 5] },
+  { minScore: 41, maxScore: Infinity, allowedDivisors: [2, 5] }
 ];
 
 function difficultyLevelForScore(score) {
