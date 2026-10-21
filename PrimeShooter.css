@@ -240,17 +240,42 @@ form.inline {
 
   .move-control {
     position: absolute;
-    right: 4px;
+    left: 50%;
     bottom: 8px;
-    left: 4px;
-    display: grid;
-    grid-template-rows: repeat(2, minmax(48px, 1fr));
-    gap: 8px;
+    width: 82px;
+    height: 82px;
+    display: block;
+    transform: translateX(-50%);
+    border: 2px solid #777;
+    border-radius: 50%;
+    background: #e4e4e4;
     touch-action: none;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .move-control button,
+  .joystick-track {
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed #999;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .joystick-knob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 36px;
+    height: 36px;
+    transform: translate(-50%, -50%);
+    border: 2px solid #555;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px #777;
+    pointer-events: none;
+  }
+
   .shoot-control {
     box-sizing: border-box;
     min-height: 52px;
@@ -273,7 +298,6 @@ form.inline {
     min-height: 64px;
   }
 
-  .move-control button:active,
   .shoot-control:active {
     background: #ddd;
   }

@@ -199,7 +199,12 @@ Gun.prototype = {
   
   /** Update the Gun each game loop (move left or right if it is going in that direction) */
   update: function() {
-    if (this.goingLeft) {
+    if (this.joystickInput !== null) {
+      this.pos += this.step * this.joystickInput;
+      this.pos = Math.max(this.minPos, Math.min(this.maxPos, this.pos));
+      setLeft(this.view, this.pos);
+    }
+    else if (this.goingLeft) {
       this.moveLeft();
     }
     else if (this.goingRight) {
@@ -247,6 +252,7 @@ Gun.prototype = {
     this.pos = this.initialPos;
     this.goingRight = false;
     this.goingLeft = false;
+    this.joystickInput = null;
     this.view.style.backgroundColor = this.loadedColor;
   }
 };
@@ -810,26 +816,17 @@ function resizeGame() {
 
 function setupTouchControls(game) {
   var moveControl = document.getElementById("moveControl");
+  var joystickKnob = document.getElementById("joystickKnob");
   var shootButton = document.getElementById("shootTwo");
   var pointerId = null;
-  var currentDirection = null;
-
-  function clearMovement() {
-    if (currentDirection == "ArrowLeft") game.keyUp("ArrowLeft");
-    if (currentDirection == "ArrowRight") game.keyUp("ArrowRight");
-    currentDirection = null;
-  }
 
   function updateMovement(event) {
     var bounds = moveControl.getBoundingClientRect();
-    var direction = event.clientY < bounds.top + bounds.height / 2
-      ? "ArrowLeft"
-      : "ArrowRight";
-    if (direction != currentDirection) {
-      clearMovement();
-      game.keyDown(direction);
-      currentDirection = direction;
-    }
+    var maxOffset = (bounds.width - joystickKnob.offsetWidth) / 2;
+    var offset = Math.max(-maxOffset, Math.min(maxOffset,
+      event.clientX - (bounds.left + bounds.width / 2)));
+    game.gun.joystickInput = offset / maxOffset;
+    joystickKnob.style.transform = "translate(calc(-50% + " + offset + "px), -50%)";
   }
 
   moveControl.addEventListener("pointerdown", function(event) {
@@ -849,7 +846,8 @@ function setupTouchControls(game) {
 
   function endMovement(event) {
     if (event.pointerId == pointerId) {
-      clearMovement();
+      game.gun.joystickInput = null;
+      joystickKnob.style.transform = "translate(-50%, -50%)";
       pointerId = null;
     }
   }
