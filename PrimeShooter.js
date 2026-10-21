@@ -357,9 +357,9 @@ Number.prototype = {
       this.veryActive = false;
       this.view.style.backgroundColor = this.activeColor;
       this.timeToDie = null;
-      this.value = randomNumberWithDivisors(
+      this.value = randomNumberForDifficulty(
         this.maxValue,
-        this.game.difficultyLevel.allowedDivisors
+        this.game.difficultyLevel.divisorSets
       );
       this.view.style.visibility = "visible";
       this.view.firstChild.nodeValue = "" + this.value;
@@ -472,11 +472,17 @@ function randomNumberWithDivisors(maxValue, allowedDivisors) {
   return values[Math.floor(Math.random() * values.length)];
 }
 
+function randomNumberForDifficulty(maxValue, divisorSets) {
+  var divisors = divisorSets[Math.floor(Math.random() * divisorSets.length)];
+  return randomNumberWithDivisors(maxValue, divisors);
+}
+
 var difficultyLevels = [
-  { minScore: 0, maxScore: 5, allowedDivisors: [2] },
-  { minScore: 6, maxScore: 20, allowedDivisors: [2, 5] },
-  { minScore: 21, maxScore: 40, allowedDivisors: [2, 5] },
-  { minScore: 41, maxScore: Infinity, allowedDivisors: [2, 5] }
+  { minScore: 0, maxScore: 5, divisorSets: [[2]] },
+  { minScore: 6, maxScore: 15, divisorSets: [[2], [5]] },
+  { minScore: 16, maxScore: 20, divisorSets: [[2, 5]] },
+  { minScore: 21, maxScore: 40, divisorSets: [[2, 5]] },
+  { minScore: 41, maxScore: Infinity, divisorSets: [[2, 5]] }
 ];
 
 function difficultyLevelForScore(score) {
