@@ -238,10 +238,11 @@ form.inline {
     border-radius: 8px;
   }
 
+ /* 24 pixel adjustment from the bottom of the screen. */
   .move-control {
     position: absolute;
     right: 4px;
-    bottom: 8px;
+    bottom: 24px; 
     left: 4px;
     display: flex;
     gap: 6px;
