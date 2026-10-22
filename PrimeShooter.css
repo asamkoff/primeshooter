@@ -33,6 +33,60 @@
   min-width: 0;
 }
 
+.sound-controls {
+  box-sizing: border-box;
+  width: min(100%, 804px);
+  margin: 1.25em auto;
+  padding: 1em;
+  border: 1px solid #c0c0c0;
+  border-radius: 6px;
+  background: #f7f7f7;
+  font-family: Arial, sans-serif;
+}
+
+.sound-controls-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  margin-bottom: 0.75em;
+}
+
+.sound-controls h2 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.sound-settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 0.8em 1em;
+}
+
+.sound-setting {
+  display: grid;
+  gap: 0.3em;
+  font-weight: bold;
+}
+
+.sound-setting input,
+.sound-setting select {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.sound-setting output {
+  color: #444;
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+.sound-status {
+  min-height: 1em;
+  margin: 0.6em 0 0;
+  font-size: 0.9em;
+}
+
 .thumb-buffer {
   position: relative;
   height: 504px;
@@ -212,14 +266,40 @@ form.inline {
     padding: 0 !important;
   }
 
+  .sound-controls {
+    position: fixed;
+    z-index: 20;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    width: auto;
+    margin: 0;
+    padding: 0.5em;
+    font-size: 0.8em;
+  }
+
+  .sound-controls-heading {
+    margin-bottom: 0.4em;
+  }
+
+  .sound-settings {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.35em;
+  }
+
+  .sound-setting {
+    min-width: 0;
+    gap: 0.1em;
+  }
+
   .game-layout {
     position: fixed;
-    inset: 0;
+    inset: 0 0 auto;
     z-index: 10;
     box-sizing: border-box;
     width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    height: calc(100vh - 136px);
+    height: calc(100dvh - 136px);
     margin: 0;
     padding: env(safe-area-inset-top) env(safe-area-inset-right)
       env(safe-area-inset-bottom) env(safe-area-inset-left);
