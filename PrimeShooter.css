@@ -290,6 +290,10 @@ form.inline {
   }
 
   .shoot-control-middle {
+    bottom: calc(30% - 32px);
+  }
+
+  .shoot-control-top {
     bottom: calc(50% - 32px);
   }
 

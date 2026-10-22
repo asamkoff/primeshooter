@@ -478,13 +478,23 @@ function randomNumberForDifficulty(maxValue, divisorSets) {
   return randomNumberWithDivisors(maxValue, divisors);
 }
 
-var difficultyLevels = [
+/*var difficultyLevels = [
   { minScore: 0, maxScore: 5, divisorSets: [[2]] },
   { minScore: 6, maxScore: 10, divisorSets: [[5]] },
-  { minScore: 11, maxScore: 20, divisorSets: [[2], [5]] },
+  { minScore: 11, maxScore: 20, divisorSets: [[2], [5]]},
   { minScore: 21, maxScore: 30, divisorSets: [[2, 5]] },
-  { minScore: 31, maxScore: 40, divisorSets: [[2, 5]] },
-  { minScore: 41, maxScore: Infinity, divisorSets: [[2, 5]] }
+  { minScore: 31, maxScore: 40, divisorSets: [[2, 3, 5]] },
+  { minScore: 41, maxScore: Infinity, divisorSets: [[2, 3,5]] }
+];
+*/
+
+var difficultyLevels = [
+  { minScore: 0, maxScore: 5, divisorSets: [[2]] },
+  { minScore: 6, maxScore: 10, divisorSets: [[2],[5]] },
+  { minScore: 11, maxScore: 20, divisorSets: [[2], [5]]},
+  { minScore: 21, maxScore: 30, divisorSets: [[2, 3, 5]] },
+  { minScore: 31, maxScore: 40, divisorSets: [[2, 3, 5]] },
+  { minScore: 41, maxScore: Infinity, divisorSets: [[2, 3,5]] }
 ];
 
 function difficultyLevelForScore(score) {
@@ -868,6 +878,7 @@ function setupTouchControls(game) {
   var leftButton = document.getElementById("moveLeft");
   var rightButton = document.getElementById("moveRight");
   var shootButton = document.getElementById("shootTwo");
+  var shootThreeButton = document.getElementById("shootThree");
   var shootFiveButton = document.getElementById("shootFive");
   var leftPointerId = null;
   var rightPointerId = null;
@@ -916,6 +927,9 @@ function setupTouchControls(game) {
   setupMoveButton(rightButton, false);
   shootButton.addEventListener("click", function() {
     game.keyPress("2");
+  });
+  shootThreeButton.addEventListener("click", function() {
+    game.keyPress("3");
   });
   shootFiveButton.addEventListener("click", function() {
     game.keyPress("5");
