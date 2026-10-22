@@ -278,6 +278,7 @@ SpareGuns.prototype = {
       this.numGuns++;
       var newGun = document.createElement ("div");
       newGun.className = "spareGun";
+      newGun.textContent = "\u2665";
       this.view.appendChild (newGun);
     }
   },

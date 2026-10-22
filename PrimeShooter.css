@@ -70,10 +70,11 @@
   z-index: -2; }
 
 .spareGun {
-  /* For each spare gun */
+  /* For each spare life */
   float: right;
-  background-color: #ffffe0;
-  border: solid 3px #b0b0b0;
+  color: #e53935;
+  font-size: 42px;
+  line-height: 20px;
   height: 20px;
   width: 20px;
   margin: 5px; }
