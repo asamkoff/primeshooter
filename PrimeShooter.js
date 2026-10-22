@@ -925,15 +925,16 @@ function setupTouchControls(game) {
 
   setupMoveButton(leftButton, true);
   setupMoveButton(rightButton, false);
-  shootButton.addEventListener("click", function() {
-    game.keyPress("2");
-  });
-  shootThreeButton.addEventListener("click", function() {
-    game.keyPress("3");
-  });
-  shootFiveButton.addEventListener("click", function() {
-    game.keyPress("5");
-  });
+  function setupShootButton(button, key) {
+    button.addEventListener("pointerdown", function(event) {
+      event.preventDefault();
+      game.keyPress(key);
+    });
+  }
+
+  setupShootButton(shootButton, "2");
+  setupShootButton(shootThreeButton, "3");
+  setupShootButton(shootFiveButton, "5");
 }
 
 function setup(numGuns) {
