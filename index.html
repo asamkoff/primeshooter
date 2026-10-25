@@ -86,45 +86,6 @@ ruby] -->
   </div>
 </div>
 
-<section id="soundControls" class="sound-controls" aria-labelledby="soundControlsTitle">
-  <div class="sound-controls-heading">
-    <h2 id="soundControlsTitle">Shooting sound</h2>
-    <button id="previewSound" type="button">Preview pew</button>
-  </div>
-  <div class="sound-settings">
-    <label class="sound-setting" for="soundFrequency">
-      <span>Oscillator frequency</span>
-      <input id="soundFrequency" type="range" min="250" max="1200" step="10" value="700">
-      <output id="soundFrequencyValue" for="soundFrequency">700 Hz</output>
-    </label>
-    <label class="sound-setting" for="soundEndFrequency">
-      <span>Ending frequency</span>
-      <input id="soundEndFrequency" type="range" min="80" max="500" step="10" value="180">
-      <output id="soundEndFrequencyValue" for="soundEndFrequency">180 Hz</output>
-    </label>
-    <label class="sound-setting" for="soundDuration">
-      <span>Duration</span>
-      <input id="soundDuration" type="range" min="80" max="400" step="10" value="180">
-      <output id="soundDurationValue" for="soundDuration">180 ms</output>
-    </label>
-    <label class="sound-setting" for="fadeInTime">
-      <span>Fade-in time</span>
-      <input id="fadeInTime" type="range" min="0" max="100" step="1" value="8">
-      <output id="fadeInTimeValue" for="fadeInTime">8 ms</output>
-    </label>
-    <label class="sound-setting sound-waveform" for="soundWaveform">
-      <span>Waveform</span>
-      <select id="soundWaveform">
-        <option value="sine">Sine</option>
-        <option value="triangle" selected>Triangle</option>
-        <option value="sawtooth">Sawtooth</option>
-        <option value="square">Square</option>
-      </select>
-    </label>
-  </div>
-  <p id="soundStatus" class="sound-status" role="status" aria-live="polite"></p>
-</section>
-
 </div>
 
 </html>

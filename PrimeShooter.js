@@ -507,85 +507,59 @@ function difficultyLevelForScore(score) {
   throw new Error("No difficulty level configured for score " + score);
 }
 
-/** Sound effect synthesizer and controls for the player's shots. */
-function ShootingSound(document) {
-  this.frequency = document.getElementById("soundFrequency");
-  this.endFrequency = document.getElementById("soundEndFrequency");
-  this.duration = document.getElementById("soundDuration");
-  // this.volume = document.getElementById("soundVolume");
-  this.fadeInTime = document.getElementById("fadeInTime");
-  this.waveform = document.getElementById("soundWaveform");
-  this.status = document.getElementById("soundStatus");
-  this.previewButton = document.getElementById("previewSound");
+var shootingSoundSettings = {
+  "2": { frequency: 700, endFrequency: 180, duration: 180, fadeInTime: 8, waveform: "triangle" },
+  "3": { frequency: 700, endFrequency: 180, duration: 180, fadeInTime: 8, waveform: "triangle" },
+  "5": { frequency: 700, endFrequency: 180, duration: 180, fadeInTime: 8, waveform: "triangle" },
+  default: { frequency: 700, endFrequency: 180, duration: 180, fadeInTime: 8, waveform: "triangle" }
+};
+
+/** Sound effect synthesizer for the player's shots. */
+function ShootingSound(settings) {
+  this.settings = settings;
   this.audioContext = null;
   this.audioContextConstructor = window.AudioContext || window.webkitAudioContext;
-
-  var sound = this;
-  function updateValue(input, output, format) {
-    var update = function() {
-      output.textContent = format(input.value);
-    };
-    input.addEventListener("input", update);
-    update();
-  }
-
-  updateValue(this.frequency, document.getElementById("soundFrequencyValue"), function(value) {
-    return value + " Hz";
-  });
-  updateValue(this.endFrequency, document.getElementById("soundEndFrequencyValue"), function(value) {
-    return value + " Hz";
-  });
-  updateValue(this.duration, document.getElementById("soundDurationValue"), function(value) {
-    return value + " ms";
-  });
-  updateValue(this.fadeInTime, document.getElementById("fadeInTimeValue"), function(value) {
-    return value + " ms";
-  });
-  this.previewButton.addEventListener("click", function() {
-    sound.play();
-  });
-
   if (!this.audioContextConstructor) {
-    this.previewButton.disabled = true;
-    this.status.textContent = "Sound is not supported by this browser.";
+    console.warn("Sound is not supported by this browser.");
   }
 }
 
 ShootingSound.prototype = {
-  play: function() {
+  play: function(settingName) {
     if (!this.audioContextConstructor) return;
     if (!this.audioContext) {
       this.audioContext = new this.audioContextConstructor();
     }
 
     var sound = this;
+    var settings = this.settings[settingName] || this.settings.default;
     if (this.audioContext.state === "suspended") {
       this.audioContext.resume().then(function() {
-        sound.playTone();
+        sound.playTone(settings);
       }, function(error) {
-        sound.status.textContent = "Could not start audio: " + error;
+        console.error("Could not start audio:", error);
       });
     }
     else {
-      this.playTone();
+      this.playTone(settings);
     }
   },
 
-  playTone: function() {
+  playTone: function(settings) {
     var now = this.audioContext.currentTime;
-    var duration = parseFloat(this.duration.value) / 1000;
+    var duration = settings.duration / 1000;
     var endTime = now + duration;
     var oscillator = this.audioContext.createOscillator();
     var gain = this.audioContext.createGain();
 
-    oscillator.type = this.waveform.value;
-    oscillator.frequency.setValueAtTime(parseFloat(this.frequency.value), now);
+    oscillator.type = settings.waveform;
+    oscillator.frequency.setValueAtTime(settings.frequency, now);
     oscillator.frequency.exponentialRampToValueAtTime(
-      parseFloat(this.endFrequency.value),
+      settings.endFrequency,
       endTime
     );
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(parseFloat(.2), now + this.fadeInTime.value);
+    gain.gain.linearRampToValueAtTime(0.2, now + settings.fadeInTime / 1000);
     gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
 
     oscillator.connect(gain);
@@ -602,7 +576,7 @@ ShootingSound.prototype = {
 /** Model of Game including Gun, Bullet, up to 5 Numbers, current score + spare guns */
 function Game (document) {
   this.gun = new Gun (document.getElementById ("gun"));
-  this.shootingSound = new ShootingSound(document);
+  this.shootingSound = new ShootingSound(shootingSoundSettings);
   this.bullet = new Bullet (document.getElementById ("bullet"), this.gun);
   this.maxNumbers = 5;
   this.numbers = new Array(this.maxNumbers);
@@ -742,11 +716,11 @@ Game.prototype = {
       var prime = this.primesForKeys[key];
       if (prime) {
         this.bullet.fire (prime);
-        this.shootingSound.play();
+        this.shootingSound.play(key);
       }
       else if (key == "p") {
         this.bullet.firePrime();
-        this.shootingSound.play();
+        this.shootingSound.play("default");
       }
     }
     return false;
