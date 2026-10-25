@@ -509,8 +509,8 @@ function difficultyLevelForScore(score) {
 
 var shootingSoundSettings = {
   "2": { frequency: 700, endFrequency: 180, duration: 180, fadeInTime: 8, waveform: "triangle" },
-  "3": { frequency: 700, endFrequency: 180, duration: 180, fadeInTime: 8, waveform: "triangle" },
-  "5": { frequency: 700, endFrequency: 180, duration: 180, fadeInTime: 8, waveform: "triangle" },
+  "3": { frequency: 1200, endFrequency: 400, duration: 180, fadeInTime: 8, waveform: "triangle" },
+  "5": { frequency: 400, endFrequency: 100, duration: 180, fadeInTime: 8, waveform: "triangle" },
   default: { frequency: 700, endFrequency: 180, duration: 180, fadeInTime: 8, waveform: "triangle" }
 };
 
