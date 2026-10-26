@@ -297,6 +297,128 @@ SpareGuns.prototype = {
   }
 }
 
+function Hamburger (view, game) {
+  this.view = view;
+  this.game = game;
+  this.timer = null;
+  this.active = false;
+}
+
+Hamburger.prototype = {
+  step: 2,
+
+  start: function() {
+    if (this.timer !== null) return;
+    var hamburger = this;
+    var delay = 10000 + Math.random() * 6000;
+    this.timer = window.setTimeout(function() {
+      hamburger.timer = null;
+      hamburger.spawn();
+      hamburger.start();
+    }, delay);
+  },
+
+  stop: function() {
+    if (this.timer !== null) {
+      window.clearTimeout(this.timer);
+      this.timer = null;
+    }
+    this.hide();
+  },
+
+  spawn: function() {
+    this.active = true;
+    this.Y = 540;
+    setLeft(this.view, Math.floor(Math.random() * 760));
+    setYPos(this.view, this.Y);
+    this.view.style.display = "block";
+  },
+
+  hide: function() {
+    this.active = false;
+    this.view.style.display = "none";
+  },
+
+  update: function() {
+    if (!this.active) return;
+
+    this.Y -= this.step;
+    if (this.Y < 0) {
+      this.hide();
+      return;
+    }
+    setYPos(this.view, this.Y);
+
+    if (collided(this.view, this.game.gun.view)) {
+      this.game.spareGuns.addGun();
+      this.hide();
+    }
+  }
+};
+
+function Horse (view, game) {
+  this.view = view;
+  this.game = game;
+  this.timer = null;
+  this.active = false;
+}
+
+Horse.prototype = {
+  step: 2,
+
+  start: function() {
+    if (this.timer !== null) return;
+    var horse = this;
+    var delay = 10000 + Math.random() * 6000;
+    this.timer = window.setTimeout(function() {
+      horse.timer = null;
+      horse.spawn();
+      horse.start();
+    }, delay);
+  },
+
+  stop: function() {
+    if (this.timer !== null) {
+      window.clearTimeout(this.timer);
+      this.timer = null;
+    }
+    this.hide();
+  },
+
+  spawn: function() {
+    this.active = true;
+    this.Y = 540;
+    setLeft(this.view, Math.floor(Math.random() * 760));
+    setYPos(this.view, this.Y);
+    this.view.style.display = "block";
+  },
+
+  hide: function() {
+    this.active = false;
+    this.view.style.display = "none";
+  },
+
+  update: function() {
+    if (!this.active || this.game.suspended) return;
+
+    this.Y -= this.step;
+    if (this.Y < 0) {
+      this.hide();
+      return;
+    }
+    setYPos(this.view, this.Y);
+
+    if (collided(this.view, this.game.gun.view)) {
+      this.hide();
+      this.game.gunDied("The horse collided with you", this);
+    }
+  },
+
+  deactivate: function() {
+    this.hide();
+  }
+};
+
 //================================================================================
 /** The Number's are the targets which come down from the top, and must be shot
  * and killed using the prime number and "P" bullets. Constructed from view (div element
@@ -597,6 +719,8 @@ function Game (document) {
   this.startNewButton.onclick = function() { if (game.controller.finished) game.controller.restart(); }
   
   this.spareGuns = new SpareGuns (document.getElementById ("spareGuns"));
+  this.hamburger = new Hamburger(document.getElementById("hamburger"), this);
+  this.horse = new Horse(document.getElementById("horse"), this);
   
   this.init();
   this.suspended = false;
@@ -765,6 +889,8 @@ Game.prototype = {
   
   /** Update for one game loop */
   update: function() {
+    this.hamburger.update();
+    this.horse.update();
     if (this.suspended) {
       this.suspendCount--; // count down until suspension finishes
       if (this.suspendCount <= 0) {
@@ -849,6 +975,8 @@ GameController.prototype = {
   restart: function() {
     this.game.clearGameOver();
     this.game.restart();
+    this.game.hamburger.start();
+    this.game.horse.start();
     this.finished = false;
     this.startLoop();
   },
@@ -892,6 +1020,8 @@ GameController.prototype = {
     var game = this.game;
     var controller = this;
     game.controller = controller;
+    game.hamburger.start();
+    game.horse.start();
     
     this.document.addEventListener("keydown", function(event) {
       if (controller.finished) return;
@@ -925,6 +1055,8 @@ GameController.prototype = {
   /** Finish the game, and stop the game loop */
   finishGame: function() {
     this.finished = true;
+    this.game.hamburger.stop();
+    this.game.horse.stop();
     if (this.frameHandle !== null) {
       cancelAnimationFrame(this.frameHandle);
       this.frameHandle = null;
@@ -1010,12 +1142,12 @@ function setup(numGuns) {
   Game.prototype.initNumGuns = numGuns;
   var game = new Game (document);
   var hamburger = document.getElementById("hamburger");
-  window.setInterval(function() {
-    hamburger.style.display = "block";
-    window.setTimeout(function() {
-      hamburger.style.display = "none";
-    }, 2000);
-  }, 10000);
+// window.setInterval(function() {
+//     hamburger.style.display = "block";
+//     window.setTimeout(function() {
+//       hamburger.style.display = "none";
+//     }, 2000);
+//   }, 10000);
   setupIsPrime (Number.prototype.maxMaxValue);
   var gameController = new GameController (document, game, SIMULATION_STEP_MS);
   gameController.startGame();
