@@ -60,6 +60,16 @@
   top: 450px;
   left: 350px; }
 
+#hamburger {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  display: none;
+  font-size: 32px;
+  line-height: 1;
+  transform: translateX(-50%);
+}
+
 #spareGuns {
   /* Player's spare guns (bottom right) */
   position: absolute;
@@ -218,8 +228,8 @@ form.inline {
     z-index: 10;
     box-sizing: border-box;
     width: 100vw;
-    height: calc(100vh - 136px);
-    height: calc(100dvh - 136px);
+    height: 100dvh;
+    height: 100vh;
     margin: 0;
     padding: env(safe-area-inset-top) env(safe-area-inset-right)
       env(safe-area-inset-bottom) env(safe-area-inset-left);

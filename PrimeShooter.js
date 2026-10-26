@@ -1009,6 +1009,13 @@ function setupTouchControls(game) {
 function setup(numGuns) {
   Game.prototype.initNumGuns = numGuns;
   var game = new Game (document);
+  var hamburger = document.getElementById("hamburger");
+  window.setInterval(function() {
+    hamburger.style.display = "block";
+    window.setTimeout(function() {
+      hamburger.style.display = "none";
+    }, 2000);
+  }, 10000);
   setupIsPrime (Number.prototype.maxMaxValue);
   var gameController = new GameController (document, game, SIMULATION_STEP_MS);
   gameController.startGame();
