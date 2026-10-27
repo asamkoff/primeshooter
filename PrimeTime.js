@@ -735,7 +735,7 @@ Game.prototype = {
   primesForKeys: initPrimesForKey(),  // keys to map to prime number bullets
   
   displayLocalStorageError: function(error) {
-    this.noLocalStorageElement.innerHTML = "&nbsp;<br/>(<b>Note:</b> PrimeShooter's high score functionality is not available in this web browser. The following error occurred when attempting to use <b>localStorage</b>: <span id = 'localStorageError'></span>)";
+    this.noLocalStorageElement.innerHTML = "&nbsp;<br/>(<b>Note:</b> PrimeTime's high score functionality is not available in this web browser. The following error occurred when attempting to use <b>localStorage</b>: <span id = 'localStorageError'></span>)";
     this.localStorageErrorElement = document.getElementById("localStorageError");
     this.localStorageErrorElement.appendChild(document.createTextNode("" + error));
   }, 
@@ -749,7 +749,7 @@ Game.prototype = {
     this.score = 0;
     this.difficultyLevel = difficultyLevelForScore(this.score);
     try {
-      this.highScoreValue = localStorage.primeShooterHighScore;
+      this.highScoreValue = localStorage.primeTimeHighScore;
       this.hasLocalStorage = true;
     }
     catch(err) {
@@ -807,7 +807,7 @@ Game.prototype = {
     else {
       this.highScoreText.firstChild.nodeValue = "Previous High Score: " + score;
     }
-    localStorage.primeShooterHighScore = "" + score;
+    localStorage.primeTimeHighScore = "" + score;
   }, 
   
   /** Give the player points (for doing something) */
