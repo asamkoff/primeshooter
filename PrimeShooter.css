@@ -45,6 +45,11 @@
   display: none;
 }
 
+.game-version {
+  color: #666;
+  font-size: 0.9em;
+}
+
 .move-control,
 .shoot-control {
   display: none;

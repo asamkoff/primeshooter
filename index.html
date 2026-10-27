@@ -48,6 +48,29 @@ ruby] -->
 <div class="wideItem">
 <h1 class="game-title">PrimeShooter<sup><small>TM</small></sup></h1>
 <div class="date game-date">22 March 2010</div>
+<div id="gameVersion" class="game-version" aria-live="polite">Version loading...</div>
+<script>
+  (function() {
+    var versionElement = document.getElementById("gameVersion");
+    fetch("version.json", { cache: "no-store" })
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error("Version request failed with status " + response.status);
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        if (!data || typeof data.version !== "string") {
+          throw new Error("Version response did not contain a version string");
+        }
+        versionElement.textContent = "Version " + data.version;
+      })
+      .catch(function(error) {
+        versionElement.textContent = "Version unavailable";
+        console.error("Could not load the game version.", error);
+      });
+  })();
+</script>
 
 <p class="rotate-message" role="status">Rotate your phone to landscape to play.</p>
 
