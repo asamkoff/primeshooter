@@ -442,7 +442,7 @@ Number.prototype = {
   width: 100, // width of view div
   height: 30, // height of view div
   veryActiveColor: "#ff0000", // danger colour when it has to be shot before it hits bottom
-  activeColor: "#ff7070", // colour when normal (coming down, will kill gun if it collides with gun)
+  activeColor: "#eaff70", // colour when normal (coming down, will kill gun if it collides with gun)
   inactiveColor: "#d0d0d0", // colour when has been "killed" by reduction to 1
   numActive: 0, // number of active Number's
   
