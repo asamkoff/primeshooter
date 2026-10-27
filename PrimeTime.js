@@ -556,6 +556,86 @@ Number.prototype = {
   
 }
 
+function Boss(view, game) {
+  this.view = view;
+  this.view.model = this;
+  this.game = game;
+  this.init();
+}
+
+Boss.prototype = {
+  maxPos: 540,
+  step: 0.25,
+  height: 48,
+  width: 204,
+  activeColor: "#ff9f40",
+  inactiveColor: "#d0d0d0",
+
+  init: function() {
+    this.deactivate();
+    this.timeToDie = null;
+  },
+
+  start: function() {
+    this.active = true;
+    this.X = Math.round((800 - this.width) * Math.random());
+    this.Y = this.maxPos;
+    this.value = this.game.bossSpawnCount === 0 ? 1250 : 1350;
+    this.game.bossSpawnCount++;
+    setLeft(this.view, this.X);
+    setYPos(this.view, this.Y);
+    this.view.style.backgroundColor = this.activeColor;
+    this.view.style.visibility = "visible";
+    this.view.firstChild.nodeValue = "" + this.value;
+  },
+
+  update: function(bullet, gun) {
+    if (!this.active) return;
+
+    if (this.timeToDie) {
+      this.timeToDie--;
+      if (this.timeToDie === 0) {
+        this.deactivate();
+        this.game.startNextBoss();
+      }
+      return;
+    }
+
+    this.Y -= this.step;
+    if (this.Y < 0) this.Y = this.maxPos;
+    setYPos(this.view, this.Y);
+
+    if (bullet.collidedWithNumber(this)) {
+      bullet.maybeHitTarget(this);
+    }
+    else if (collided(this.view, gun.view)) {
+      this.game.gunDied("The boss " + this.value + " collided with you", this);
+    }
+  },
+
+  deactivate: function() {
+    this.active = false;
+    this.view.style.visibility = "hidden";
+  },
+
+  isHitByBullet: function(bullet) {
+    var result = bullet.actsOn(this.value);
+    if (result) {
+      this.value = result;
+      this.view.firstChild.nodeValue = "" + result;
+      bullet.clear();
+      if (result === 1) {
+        this.game.addScore(1);
+        this.view.style.backgroundColor = this.inactiveColor;
+        this.timeToDie = 20;
+      }
+    }
+    else {
+      bullet.deactivate();
+    }
+  }
+};
+
 //================================================================================
 /** Initialise map from key to primes (for firing bullets) */
 function initPrimesForKey() {
@@ -706,6 +786,7 @@ function Game (document) {
     this.numbers[i] = new Number (document.getElementById ("number" + i), i, this.numbers);
     this.numbers[i].game = this;
   }
+  this.boss = new Boss(document.getElementById("boss"), this);
   this.scoreText = document.getElementById ("scoreValue");
   this.highScoreText = document.getElementById ("highScore");
   this.gameOverElement = document.getElementById ("gameOver");
@@ -742,6 +823,10 @@ Game.prototype = {
   
   /** Initialise game */
   init: function() {
+    this.bossQueue = 0;
+    this.bossSpawnCount = 0;
+    this.nextBossScore = 25;
+    this.boss.init();
     this.currentNumbers = 1;
     this.gameOverElement.style.display = "none";
     this.messageElement.style.display = "none";
@@ -814,6 +899,11 @@ Game.prototype = {
   addScore: function (increment) {
     var oldNumGuns = this.gunsFromScore();
     this.score += increment;
+    while (this.score >= this.nextBossScore) {
+      this.bossQueue++;
+      this.nextBossScore += 25;
+    }
+    this.startNextBoss();
     if (this.score > this.highScore) {
       this.updateHighScore(this.score, true);
     }
@@ -830,6 +920,13 @@ Game.prototype = {
     ); // max number of active numbers
     Number.prototype.maxValue = maxValueFromScore (this.score); // update max value for Numbers
     this.difficultyLevel = difficultyLevelForScore(this.score);
+  },
+
+  startNextBoss: function() {
+    if (!this.boss.active && this.bossQueue > 0) {
+      this.bossQueue--;
+      this.boss.start();
+    }
   },
   
   /** Response to key press, either a prime bullet or a "P" bullet, or none */
@@ -906,6 +1003,7 @@ Game.prototype = {
         var number = this.numbers[i];
         number.update (this.bullet, this.gun);
       }
+      this.boss.update(this.bullet, this.gun);
       this.bullet.checkHitTarget();
     }
   },
@@ -922,6 +1020,7 @@ Game.prototype = {
       this.suspend (40, function() {
         game.clearMessage();
         killer.deactivate(); // whatever Number killed the gun, deactivate it
+        if (killer === game.boss) game.startNextBoss();
         game.bullet.clear(); // clear any current bullet
         game.spareGuns.removeGun(); // use up a spare gun
         game.gun.setLoaded(); // ready to carry on shooting

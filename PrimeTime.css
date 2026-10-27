@@ -128,6 +128,23 @@
   z-index: 0;
   border: solid 1px; }
 
+.boss {
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 204px;
+  height: 48px;
+  line-height: 46px;
+  text-align: center;
+  font-size: 24px;
+  font-family: Arial,sans-serif;
+  font-weight: bold;
+  background-color: #ff9f40;
+  z-index: 0;
+  border: solid 1px;
+  visibility: hidden; }
+
 #score {
   /* Score display (top left) */
   position: absolute;
