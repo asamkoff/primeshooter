@@ -239,8 +239,8 @@ form.inline {
     z-index: 10;
     box-sizing: border-box;
     width: 100vw;
-    height: 100dvh;
     height: 100vh;
+    height: 100dvh;
     margin: 0;
     padding: env(safe-area-inset-top) env(safe-area-inset-right)
       env(safe-area-inset-bottom) env(safe-area-inset-left);
