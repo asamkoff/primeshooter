@@ -563,6 +563,17 @@ function Boss(view, game) {
   this.init();
 }
 
+function randomBossNumber(factorCount, allowedDivisors) {
+  var value;
+  do {
+    value = 1;
+    for (var i = 0; i < factorCount; i++) {
+      value *= allowedDivisors[Math.floor(Math.random() * allowedDivisors.length)];
+    }
+  } while (value <= 1000);
+  return value;
+}
+
 Boss.prototype = {
   maxPos: 540,
   step: 0.25,
@@ -580,7 +591,10 @@ Boss.prototype = {
     this.active = true;
     this.X = Math.round((800 - this.width) * Math.random());
     this.Y = this.maxPos;
-    this.value = this.game.bossSpawnCount === 0 ? 1250 : 1350;
+    var allowedDivisors = this.game.bossSpawnCount === 0 ? [2, 5] : [2, 3, 5];
+    var factorCount = this.game.bossSpawnCount === 0 ? 8 :
+      (this.game.bossSpawnCount === 1 ? 10 : 15);
+    this.value = randomBossNumber(factorCount, allowedDivisors);
     this.game.bossSpawnCount++;
     setLeft(this.view, this.X);
     setYPos(this.view, this.Y);
@@ -831,7 +845,7 @@ Game.prototype = {
     this.gameOverElement.style.display = "none";
     this.messageElement.style.display = "none";
     this.bullet.clear();
-    this.score = 0;
+    this.score = 0; //0; comment for starting with a high score for testing
     this.difficultyLevel = difficultyLevelForScore(this.score);
     try {
       this.highScoreValue = localStorage.primeTimeHighScore;
