@@ -311,7 +311,7 @@ Hamburger.prototype = {
   start: function() {
     if (this.timer !== null) return;
     var hamburger = this;
-    var delay = 20000 + Math.random() * 6000;
+    var delay = 19000 + Math.random() * 3000;
     this.timer = window.setTimeout(function() {
       hamburger.timer = null;
       hamburger.spawn();
@@ -372,6 +372,7 @@ function Horse (view, game) {
   this.game = game;
   this.timer = null;
   this.active = false;
+  this.neighSound = new Audio("dragon-studio-horse-neigh-390297.mp3");
   this.gallopingSound = new Audio("dragon-studio-horse-galloping-339737.mp3");
   this.gallopingSound.preload = "auto";
   this.audioContext = null;
@@ -388,7 +389,7 @@ Horse.prototype = {
   start: function() {
     if (this.timer !== null) return;
     var horse = this;
-    var delay = 10000 + Math.random() * 6000;
+    var delay = 12000 + Math.random() * 3000;
     this.timer = window.setTimeout(function() {
       horse.timer = null;
       horse.spawn();
@@ -494,6 +495,13 @@ Horse.prototype = {
     setYPos(this.view, this.Y);
 
     if (collided(this.view, this.game.gun.view)) {
+      this.neighSound.currentTime = 0;
+      var playPromise = this.neighSound.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function(error) {
+          console.error("Could not play horse neigh sound:", error);
+        });
+      }
       this.hide();
       this.game.gunDied("The horse collided with you", this);
     }
