@@ -302,6 +302,7 @@ function Hamburger (view, game) {
   this.game = game;
   this.timer = null;
   this.active = false;
+  this.chompSound = new Audio("chomp.mp3");
 }
 
 Hamburger.prototype = {
@@ -310,7 +311,7 @@ Hamburger.prototype = {
   start: function() {
     if (this.timer !== null) return;
     var hamburger = this;
-    var delay = 10000 + Math.random() * 6000;
+    var delay = 20000 + Math.random() * 6000;
     this.timer = window.setTimeout(function() {
       hamburger.timer = null;
       hamburger.spawn();
@@ -351,6 +352,13 @@ Hamburger.prototype = {
 
     if (collided(this.view, this.game.gun.view)) {
       this.game.spareGuns.addGun();
+      this.chompSound.currentTime = 0;
+      var playPromise = this.chompSound.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function(error) {
+          console.error("Could not play chomp sound:", error);
+        });
+      }
       this.hide();
     }
   }
@@ -361,6 +369,7 @@ function Horse (view, game) {
   this.game = game;
   this.timer = null;
   this.active = false;
+  this.gallopingSound = new Audio("dragon-studio-horse-galloping-339737.mp3");
 }
 
 Horse.prototype = {
@@ -391,6 +400,13 @@ Horse.prototype = {
     setLeft(this.view, Math.floor(Math.random() * 760));
     setYPos(this.view, this.Y);
     this.view.style.display = "block";
+    this.gallopingSound.currentTime = 0;
+    var playPromise = this.gallopingSound.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(function(error) {
+        console.error("Could not play horse galloping sound:", error);
+      });
+    }
   },
 
   hide: function() {
