@@ -364,8 +364,8 @@ Hamburger.prototype = {
   }
 };
 
-var HORSE_GALLOP_FADE_DELAY_MS = 1000;
-var HORSE_GALLOP_FADE_DURATION_MS = 3000;
+var HORSE_GALLOP_FADE_DELAY_MS = 2500;
+var HORSE_GALLOP_FADE_DURATION_MS = 4000;
 
 function Horse (view, game) {
   this.view = view;
@@ -415,24 +415,30 @@ Horse.prototype = {
 
   playGallopingSound: function() {
     var horse = this;
-    this.gallopingSound.pause();
-    this.gallopingSound.currentTime = 0;
+    var sound = this.gallopingSound;
+    sound.pause();
+    sound.currentTime = 0;
     if (this.audioContextConstructor && !this.audioContext) {
       this.audioContext = new this.audioContextConstructor();
-      var source = this.audioContext.createMediaElementSource(this.gallopingSound);
+      var source = this.audioContext.createMediaElementSource(sound);
       this.gallopingGain = this.audioContext.createGain();
       source.connect(this.gallopingGain);
       this.gallopingGain.connect(this.audioContext.destination);
     }
 
+    function removePlayingHandler() {
+      if (!horse.gallopingPlayingHandler) return;
+      sound.removeEventListener("playing", horse.gallopingPlayingHandler);
+      horse.gallopingPlayingHandler = null;
+    }
+
     function startSound() {
       if (!horse.audioContextConstructor) {
-        var fallbackPromise = horse.gallopingSound.play();
-        if (fallbackPromise && typeof fallbackPromise.catch === "function") {
+        var fallbackPromise = sound.play();
+        if (fallbackPromise && typeof fallbackPromise.catch === "function")
           fallbackPromise.catch(function(error) {
             console.error("Could not play horse galloping sound:", error);
           });
-        }
         return;
       }
 
@@ -440,29 +446,23 @@ Horse.prototype = {
       horse.gallopingGain.gain.cancelScheduledValues(now);
       horse.gallopingGain.gain.setValueAtTime(1, now);
 
-      if (horse.gallopingPlayingHandler) {
-        horse.gallopingSound.removeEventListener("playing", horse.gallopingPlayingHandler);
-      }
+      removePlayingHandler();
       horse.gallopingPlayingHandler = function() {
-        horse.gallopingSound.removeEventListener("playing", horse.gallopingPlayingHandler);
-        horse.gallopingPlayingHandler = null;
+        removePlayingHandler();
 
         var playbackStartedAt = horse.audioContext.currentTime;
         var fadeStartTime = playbackStartedAt + HORSE_GALLOP_FADE_DELAY_MS / 1000;
         var fadeEndTime = fadeStartTime + HORSE_GALLOP_FADE_DURATION_MS / 1000;
         horse.gallopingGain.gain.setValueAtTime(1, playbackStartedAt);
         horse.gallopingGain.gain.setValueAtTime(1, fadeStartTime);
-        horse.gallopingGain.gain.exponentialRampToValueAtTime(0.0001, fadeEndTime);
+        horse.gallopingGain.gain.linearRampToValueAtTime(0, fadeEndTime);
       };
-      horse.gallopingSound.addEventListener("playing", horse.gallopingPlayingHandler);
+      sound.addEventListener("playing", horse.gallopingPlayingHandler);
 
-      var playPromise = horse.gallopingSound.play();
+      var playPromise = sound.play();
       if (playPromise && typeof playPromise.catch === "function") {
         playPromise.catch(function(error) {
-          if (horse.gallopingPlayingHandler) {
-            horse.gallopingSound.removeEventListener("playing", horse.gallopingPlayingHandler);
-            horse.gallopingPlayingHandler = null;
-          }
+          removePlayingHandler();
           console.error("Could not play horse galloping sound:", error);
         });
       }
