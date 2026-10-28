@@ -364,8 +364,8 @@ Hamburger.prototype = {
   }
 };
 
-var HORSE_GALLOP_FADE_DELAY_MS = 2500;
-var HORSE_GALLOP_FADE_DURATION_MS = 5000;
+var HORSE_GALLOP_FADE_DELAY_MS = 1000;
+var HORSE_GALLOP_FADE_DURATION_MS = 3000;
 
 function Horse (view, game) {
   this.view = view;
@@ -442,7 +442,7 @@ Horse.prototype = {
       horse.gallopingGain.gain.cancelScheduledValues(now);
       horse.gallopingGain.gain.setValueAtTime(1, now);
       horse.gallopingGain.gain.setValueAtTime(1, fadeStartTime);
-      horse.gallopingGain.gain.linearRampToValueAtTime(0, fadeEndTime);
+      horse.gallopingGain.gain.exponentialRampToValueAtTime(0.0001, fadeEndTime);
 
       var playPromise = horse.gallopingSound.play();
       if (playPromise && typeof playPromise.catch === "function") {
