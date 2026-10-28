@@ -437,16 +437,32 @@ Horse.prototype = {
       }
 
       var now = horse.audioContext.currentTime;
-      var fadeStartTime = now + HORSE_GALLOP_FADE_DELAY_MS / 1000;
-      var fadeEndTime = fadeStartTime + HORSE_GALLOP_FADE_DURATION_MS / 1000;
       horse.gallopingGain.gain.cancelScheduledValues(now);
       horse.gallopingGain.gain.setValueAtTime(1, now);
-      horse.gallopingGain.gain.setValueAtTime(1, fadeStartTime);
-      horse.gallopingGain.gain.exponentialRampToValueAtTime(0.0001, fadeEndTime);
+
+      if (horse.gallopingPlayingHandler) {
+        horse.gallopingSound.removeEventListener("playing", horse.gallopingPlayingHandler);
+      }
+      horse.gallopingPlayingHandler = function() {
+        horse.gallopingSound.removeEventListener("playing", horse.gallopingPlayingHandler);
+        horse.gallopingPlayingHandler = null;
+
+        var playbackStartedAt = horse.audioContext.currentTime;
+        var fadeStartTime = playbackStartedAt + HORSE_GALLOP_FADE_DELAY_MS / 1000;
+        var fadeEndTime = fadeStartTime + HORSE_GALLOP_FADE_DURATION_MS / 1000;
+        horse.gallopingGain.gain.setValueAtTime(1, playbackStartedAt);
+        horse.gallopingGain.gain.setValueAtTime(1, fadeStartTime);
+        horse.gallopingGain.gain.exponentialRampToValueAtTime(0.0001, fadeEndTime);
+      };
+      horse.gallopingSound.addEventListener("playing", horse.gallopingPlayingHandler);
 
       var playPromise = horse.gallopingSound.play();
       if (playPromise && typeof playPromise.catch === "function") {
         playPromise.catch(function(error) {
+          if (horse.gallopingPlayingHandler) {
+            horse.gallopingSound.removeEventListener("playing", horse.gallopingPlayingHandler);
+            horse.gallopingPlayingHandler = null;
+          }
           console.error("Could not play horse galloping sound:", error);
         });
       }
