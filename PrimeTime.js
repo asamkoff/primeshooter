@@ -364,12 +364,18 @@ Hamburger.prototype = {
   }
 };
 
+var HORSE_GALLOP_FADE_DELAY_MS = 4000;
+var HORSE_GALLOP_FADE_DURATION_MS = 3000;
+var HORSE_GALLOP_FADE_INTERVAL_MS = 50;
+
 function Horse (view, game) {
   this.view = view;
   this.game = game;
   this.timer = null;
   this.active = false;
   this.gallopingSound = new Audio("dragon-studio-horse-galloping-339737.mp3");
+  this.gallopingFadeStartTimer = null;
+  this.gallopingFadeInterval = null;
 }
 
 Horse.prototype = {
@@ -400,13 +406,36 @@ Horse.prototype = {
     setLeft(this.view, Math.floor(Math.random() * 760));
     setYPos(this.view, this.Y);
     this.view.style.display = "block";
+    if (this.gallopingFadeStartTimer !== null) {
+      window.clearTimeout(this.gallopingFadeStartTimer);
+      this.gallopingFadeStartTimer = null;
+    }
+    if (this.gallopingFadeInterval !== null) {
+      window.clearInterval(this.gallopingFadeInterval);
+      this.gallopingFadeInterval = null;
+    }
     this.gallopingSound.currentTime = 0;
+    this.gallopingSound.volume = 1;
     var playPromise = this.gallopingSound.play();
     if (playPromise && typeof playPromise.catch === "function") {
       playPromise.catch(function(error) {
         console.error("Could not play horse galloping sound:", error);
       });
     }
+
+    var horse = this;
+    this.gallopingFadeStartTimer = window.setTimeout(function() {
+      horse.gallopingFadeStartTimer = null;
+      var fadeStartedAt = Date.now();
+      horse.gallopingFadeInterval = window.setInterval(function() {
+        var fadeProgress = (Date.now() - fadeStartedAt) / HORSE_GALLOP_FADE_DURATION_MS;
+        horse.gallopingSound.volume = Math.max(0, 1 - fadeProgress);
+        if (fadeProgress >= 1) {
+          window.clearInterval(horse.gallopingFadeInterval);
+          horse.gallopingFadeInterval = null;
+        }
+      }, HORSE_GALLOP_FADE_INTERVAL_MS);
+    }, HORSE_GALLOP_FADE_DELAY_MS);
   },
 
   hide: function() {
