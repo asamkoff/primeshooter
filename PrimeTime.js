@@ -364,8 +364,8 @@ Hamburger.prototype = {
   }
 };
 
-var HORSE_GALLOP_FADE_DELAY_MS = 3000;
-var HORSE_GALLOP_FADE_DURATION_MS = 3000;
+var HORSE_GALLOP_FADE_DELAY_MS = 2500;
+var HORSE_GALLOP_FADE_DURATION_MS = 5000;
 
 function Horse (view, game) {
   this.view = view;
